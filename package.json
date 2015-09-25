@@ -1,0 +1,18 @@
+{
+  "name": "neurio-coffees-ready",
+  "version": "1.0.0",
+  "description": "Sends a message to slack when the coffee maker or kettle are done.",
+  "main": "app,js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3",
+    "node-schedule": "^0.2.9",
+    "request-promise": "^0.4.3",
+    "slackbot": "0.0.2",
+    "underscore": "^1.8.3"
+  }
+}
