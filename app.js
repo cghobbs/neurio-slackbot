@@ -7,7 +7,7 @@ var express = require('express'),
     config = require('./config');
 
 var app = express();
-var slackbot = new Slackbot('neurio', config.slack_key);
+var slackbot = new Slackbot('neurio', process.env.SLACK_KEY);
 
 var kettle_message = "The kettle is done boiling."
 var coffee_message = "[Beta] The coffee is ready."
@@ -32,7 +32,7 @@ var server = app.listen(3000, function () {
 
   console.log('Neurio is prepared to help keep you caffeinated...');
 
-  auth.simple(config.clientId, config.clientSecret).then(function (client) {
+  auth.simple(process.env.CLIENT_ID, process.env.CLIENT_SECRET).then(function (client) {
 
   	client.user().then(function (user) {
 
