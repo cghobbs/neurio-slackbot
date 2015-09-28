@@ -28,6 +28,8 @@ var coffee_jokes = ["Did you make enough for me?",
 "Are you taking coffee orders? I'll have an austrian goat milk double-half-caf-half-decaf-soy milk cappuccino-extra hot with a dash of madagascar cinnamon. Please.",
 "Today I will kick ass and make dreams come true. But first coffee."]
 
+var coffee_maker_running = false;
+
 var server = app.listen(process.env.PORT || 5000, function () {
 
   console.log('Neurio is prepared to help keep you caffeinated...');
@@ -55,12 +57,14 @@ var server = app.listen(process.env.PORT || 5000, function () {
 
           // When it looks like the coffee maker turns on, send a message 10 minutes from now
           e = _.find(events, function (e) {return e.appliance.id == "-mBxX-ZZSnyiHVuf2vhfsA" && e.status == "in_progress"});
-          if (!(_.isUndefined(e))) {
+          if (!(_.isUndefined(e)) && !coffee_maker_running) {
             var date = new Date(now.getTime() + 1000*60*10);
             var message = coffee_message + " " + coffee_jokes[Math.floor(Math.random()*coffee_jokes.length)];
+            coffee_maker_running = true;
             var job = schedule.scheduleJob(date, function(){
               slackbot.send("#caffeine", message, function(err, res, body) { if(err) return; });
               console.log(message);
+              coffee_maker_running = false;
             });
             console.log("Coffee maker has started, message scheduled to send in 10 minutes.");
           }
