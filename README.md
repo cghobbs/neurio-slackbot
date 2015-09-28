@@ -10,9 +10,9 @@ Once this repository has been cloned, navigate to the directory and run:
 
 You will need to make sure the following environment variables are set:
 
-SLACK_KEY
-CLIENT_ID (Neurio)
-CLIENT_SECRET (Neurio)
+- SLACK_KEY
+- CLIENT_ID (Neurio)
+- CLIENT_SECRET (Neurio)
 
 ## Starting the App
 
