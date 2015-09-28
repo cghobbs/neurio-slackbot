@@ -28,7 +28,7 @@ var coffee_jokes = ["Did you make enough for me?",
 "Are you taking coffee orders? I'll have an austrian goat milk double-half-caf-half-decaf-soy milk cappuccino-extra hot with a dash of madagascar cinnamon. Please.",
 "Today I will kick ass and make dreams come true. But first coffee."]
 
-var server = app.listen(3000, function () {
+var server = app.listen(process.env.PORT || 5000, function () {
 
   console.log('Neurio is prepared to help keep you caffeinated...');
 
