@@ -28,6 +28,8 @@ var coffee_jokes = ["Did you make enough for me?",
 "Are you taking coffee orders? I'll have an austrian goat milk double-half-caf-half-decaf-soy milk cappuccino-extra hot with a dash of madagascar cinnamon. Please.",
 "Today I will kick ass and make dreams come true. But first coffee."]
 
+// Neurio tracks three distinct events for our coffee maker: griding, pre-heating, and brewing
+// Because of this we need a way to prevent it from sending three distinct start events to Slack
 var coffee_maker_running = false;
 
 var server = app.listen(process.env.PORT || 5000, function () {
@@ -56,6 +58,7 @@ var server = app.listen(process.env.PORT || 5000, function () {
           }
 
           // When it looks like the coffee maker turns on, send a message 10 minutes from now
+          // TODO: This is done pretty crudely at the moment, assume a 10 minute run-time
           e = _.find(events, function (e) {return e.appliance.id == "-mBxX-ZZSnyiHVuf2vhfsA" && e.status == "in_progress"});
           if (!(_.isUndefined(e)) && !coffee_maker_running) {
             var date = new Date(now.getTime() + 1000*60*10);
