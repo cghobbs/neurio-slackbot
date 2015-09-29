@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/css/reset.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
+  <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
+</head>
+<body class="mixpanel-platform-body">
+<script>
+
+$(document).ready(function() {
+
+  projectKey = '<%= process.env.MIXPANEL_API_KEY%>'
+  projectSecret = '<%= process.env.MIXPANEL_API_SECRET %>'
+
+  var t = MP.api.setCredentials(projectKey, projectSecret);
+
+  var last_monday = moment().day(-1);
+
+  stickiness(moment('August 31, 2015'), last_monday);
+  retention(moment('September 7, 2015'), last_monday);
+
+});
+
+function stickiness(from, to) {
+  
+  var eventName = 'Open'; // Event type to measure for stickiness
+
+  var $wau = MP.api.segment(eventName, {
+    from: from,
+    to: to,
+    unit: 'week',
+    type: 'unique'
+  });
+
+  var $dau = MP.api.segment(eventName, {
+    from: from,
+    to: to,
+    unit: 'day', 
+    type: 'unique'
+  });
+
+  $.when($dau, $wau).done(function(dau, wau) {
+    daily = dau.values().Open;
+    weekly = wau.values().Open;
+
+    grouped = _.groupBy(daily, function(value, date){
+      return moment(date).day(1).format('YYYY-MM-DD');
+    });
+
+    reduced = _.object(_.map(grouped, function(values, date){
+      value = _.reduce(values, function(memo, num){
+        return memo + num;
+      }, 0) / values.length;
+      value = value/weekly[date]*100;
+      return [date, Math.round(value)];
+    }));
+
+    var data = {
+      "DAU/WAU (%)": reduced
+    }
+
+    var lineChart = $('#stickiness').append().MPChart({chartType: 'line'});
+    lineChart.MPChart('setData', data);
+
+    console.log(data);
+
+  });
+}
+
+function retention(from, to) {
+  
+  var params = {
+    from: from,
+    to: to,
+    unit: 'day',
+    interval_count: '30',
+    born_event: 'SignUp',
+  }
+
+  MP.api.retention('Open', params).done(function(results){
+
+    weeks = _.groupBy(results.values(), function(value, date){
+      return moment(date).day(1).format('YYYY-MM-DD');
+    });
+
+    var data = {
+      "D1 Retention" : {}, 
+      "D7 Retention" : {}, 
+      "D28 Retention": {}
+    };
+
+    _.each(weeks, function(days, date, list){
+
+      var first = _.reduce(days, function(memo, value){
+        return memo + value.first;
+      }, 0);
+
+      var d1 = _.reduce(days, function(memo, value){
+        return memo + value.counts[1];
+      }, 0);
+
+      var d7 = _.reduce(days, function(memo, value){
+        return memo + value.counts[7];
+      }, 0);
+
+      var d28 = _.reduce(days, function(memo, value){
+        return memo + value.counts[28];
+      }, 0);
+
+      if(first){
+        if(d1)
+          this["D1 Retention"][date] = Math.round(d1/first*100);
+        if(d7)
+          this["D7 Retention"][date] = Math.round(d7/first*100);
+        if(d28)
+          this["D28 Retention"][date] = Math.round(d28/first*100);
+      }
+
+    }, data);
+
+    console.log(data);
+
+    var lineChart = $('#retention').append().MPChart({chartType: 'line'});
+    lineChart.MPChart('setData', data);
+
+    console.log(lineChart.MPChart);
+
+  });
+
+}
+
+</script>
+  <div id="date-selector"></div>
+  <br>
+  <h2 style="font-size: 20px;">Engagement</h2>
+  <div id="stickiness"></div>
+  <br>
+  <h2 style="font-size: 20px;">Retention</h2>
+  <div id="retention"></div>
+</body>
+</html>

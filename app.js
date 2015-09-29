@@ -4,9 +4,30 @@ var express = require('express'),
     Client = require('./lib/client'),
     schedule = require('node-schedule'),
     Slackbot = require('slackbot'),
-    config = require('./config');
+    config = require('./config'),
+    basicAuth = require('basic-auth');
 
 var app = express();
+
+var authenticate = function (req, res, next) {
+  function unauthorized(res) {
+    res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
+    return res.sendStatus(401);
+  };
+
+  var user = basicAuth(req);
+
+  if (!user || !user.name || !user.pass) {
+    return unauthorized(res);
+  };
+
+  if (user.name === 'neurio' && user.pass === 'neurio') {
+    return next();
+  } else {
+    return unauthorized(res);
+  };
+};
+
 var slackbot = new Slackbot('neurio', process.env.SLACK_KEY);
 
 var kettle_message = "The kettle is done boiling."
@@ -31,6 +52,12 @@ var coffee_jokes = ["Did you make enough for me?",
 // Neurio tracks three distinct events for our coffee maker: griding, pre-heating, and brewing
 // Because of this we need a way to prevent it from sending three distinct start events to Slack
 var coffee_maker_running = false;
+
+app.set('view engine', 'ejs'); 
+
+app.get('/', authenticate, function (req, res) {
+  res.render('index');
+});
 
 var server = app.listen(process.env.PORT || 5000, function () {
 

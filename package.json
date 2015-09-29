@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "basic-auth": "^1.0.3",
+    "ejs": "^2.3.4",
     "express": "^4.13.3",
     "node-schedule": "^0.2.9",
     "request-promise": "^0.4.3",
