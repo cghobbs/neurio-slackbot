@@ -19,7 +19,6 @@ $(document).ready(function() {
   var last_monday = moment().day(-1);
 
   stickiness(moment('August 31, 2015'), last_monday);
-  addiction(moment('September 2, 2015'), last_monday);
   retention(moment('September 7, 2015'), last_monday);
   growth(moment('August 31, 2015'), last_monday);
 
@@ -140,33 +139,10 @@ function growth(from, to) {
   });
 }
 
-function addiction(from, to) {
-
-  var params = {
-    from: from,
-    to: to,
-    unit: "week",
-    addiction_unit: "day"
-  };
-
-  MP.api.query('/api/2.0/retention/addiction/', params)
-  .done(function(results){
-    console.log(results);
-    var table = $('#addiction').append().MPTable({
-      data: results.data,
-      showPercentages: true
-    });
-  });
-
-}
-
 </script>
-  <div id="date-selector"></div>
-  <br>
   <h2 style="font-size: 20px;">Engagement</h2>
   <p>How sticky is our product? Of the people using our product in a given week how many times per week are they using it? This metric is expressed as a ratio of daily active users over weekly active users.</p>
   <div id="stickiness"></div>
-  <div id="addiction"></div>
   <br>
   <h2 style="font-size: 20px;">Retention</h2>
   <p>How long do our users stick around for? Of the people who signed up in a given week how many are using the product 1 day later, 7 days later, and 28 days later?</p>
