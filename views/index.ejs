@@ -19,7 +19,9 @@ $(document).ready(function() {
   var last_monday = moment().day(-1);
 
   stickiness(moment('August 31, 2015'), last_monday);
+  addiction(moment('September 2, 2015'), last_monday);
   retention(moment('September 7, 2015'), last_monday);
+  growth(moment('August 31, 2015'), last_monday);
 
 });
 
@@ -63,8 +65,6 @@ function stickiness(from, to) {
 
     var lineChart = $('#stickiness').append().MPChart({chartType: 'line'});
     lineChart.MPChart('setData', data);
-
-    console.log(data);
 
   });
 }
@@ -120,13 +120,42 @@ function retention(from, to) {
 
     }, data);
 
-    console.log(data);
-
     var lineChart = $('#retention').append().MPChart({chartType: 'line'});
     lineChart.MPChart('setData', data);
 
-    console.log(lineChart.MPChart);
+  });
 
+}
+
+function growth(from, to) {
+  var $signups = MP.api.segment('SignUp', {
+    from: from,
+    to: to,
+    unit: 'week',
+    type: 'unique'
+  }).done(function(results){
+    var lineChart = $('#growth').append().MPChart({chartType: 'line'});
+    lineChart.MPChart('setData', results.values());
+
+  });
+}
+
+function addiction(from, to) {
+
+  var params = {
+    from: from,
+    to: to,
+    unit: "week",
+    addiction_unit: "day"
+  };
+
+  MP.api.query('/api/2.0/retention/addiction/', params)
+  .done(function(results){
+    console.log(results);
+    var table = $('#addiction').append().MPTable({
+      data: results.data,
+      showPercentages: true
+    });
   });
 
 }
@@ -137,10 +166,15 @@ function retention(from, to) {
   <h2 style="font-size: 20px;">Engagement</h2>
   <p>How sticky is our product? Of the people using our product in a given week how many times per week are they using it? This metric is expressed as a ratio of daily active users over weekly active users.</p>
   <div id="stickiness"></div>
+  <div id="addiction"></div>
   <br>
   <h2 style="font-size: 20px;">Retention</h2>
-  <p>How long do our users stick around for? Of the people who signed up in a given week how many are using the product 1 day later, 7 days later, and 28 days later?
+  <p>How long do our users stick around for? Of the people who signed up in a given week how many are using the product 1 day later, 7 days later, and 28 days later?</p>
   <div id="retention"></div>
+  <br>
+  <h2 style="font-size: 20px;">Growth</h2>
+  <p>Number of new accounts created each week.</p>
+  <div id="growth"></div>
   <h3>Notes</h3>
   <p>Sometimes it's possible to do things that improve one of these metrics but hurt the other. In general, what we want to try to do is improve these two metrics together as we also achieve growth. Engagement and retention together are a good measure of whether we have product market fit.</p>
 </body>

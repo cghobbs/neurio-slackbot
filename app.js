@@ -30,8 +30,8 @@ var authenticate = function (req, res, next) {
 
 var slackbot = new Slackbot('neurio', process.env.SLACK_KEY);
 
-var kettle_message = "The kettle is done boiling."
-var coffee_message = "[Beta] The coffee is ready."
+var kettle_message = ":tea: The kettle is done boiling."
+var coffee_message = ":coffee: The coffee is ready."
 
 var kettle_jokes = ["Did you make enough for me?",
 "If you're making a pot, I prefer something a little fruity... just sayin'.",
