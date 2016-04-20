@@ -53,12 +53,6 @@ var coffee_jokes = ["Did you make enough for me?",
 // Because of this we need a way to prevent it from sending three distinct start events to Slack
 var coffee_maker_running = false;
 
-app.set('view engine', 'ejs'); 
-
-app.get('/', authenticate, function (req, res) {
-  res.render('index');
-});
-
 var server = app.listen(process.env.PORT || 5000, function () {
 
   console.log('Neurio is prepared to help keep you caffeinated...');
